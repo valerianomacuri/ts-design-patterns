@@ -11,7 +11,7 @@
  * https://refactoring.guru/es/design-patterns/adapter
  */
 
-import { COLORS } from '../helpers/colors.ts';
+import { COLORS } from "../helpers/colors.ts";
 
 // 1. Interfaz PaymentProcessor
 interface PaymentProcessor {
@@ -45,18 +45,30 @@ class MercadoPagoService {
 // 3. Clases Adaptadoras
 
 // Adaptador para PayPal
-class PayPalAdapter {
+class PayPalAdapter implements PaymentProcessor {
   // TODO: Implementar la interfaz PaymentProcessor
+  private service: PayPalService = new PayPalService();
+  processPayment(amount: number): void {
+    this.service.sendPayment(amount);
+  }
 }
 
 // Adaptador para Stripe
-class StripeAdapter {
+class StripeAdapter implements PaymentProcessor {
   // TODO: Implementar la interfaz PaymentProcessor
+  private service: StripeService = new StripeService();
+  processPayment(amount: number): void {
+    this.service.makeCharge(amount);
+  }
 }
 
 // Adaptador para MercadoPago
-class MercadoPagoAdapter {
+class MercadoPagoAdapter implements PaymentProcessor {
   // TODO: Implementar la interfaz PaymentProcessor
+  private service: MercadoPagoService = new MercadoPagoService();
+  processPayment(amount: number): void {
+    this.service.pay(amount);
+  }
 }
 
 // 4. Código Cliente para probar el Adapter
@@ -71,13 +83,13 @@ function main() {
 
   // Procesar pagos con los diferentes servicios
   // Los 3 procesadores de pago trabajan exactamente igual después de adaptaros
-  console.log('Usando PayPal:');
+  console.log("Usando PayPal:");
   paypalProcessor.processPayment(paymentAmount);
 
-  console.log('\nUsando Stripe:');
+  console.log("\nUsando Stripe:");
   stripeProcessor.processPayment(paymentAmount);
 
-  console.log('\nUsando MercadoPago:');
+  console.log("\nUsando MercadoPago:");
   mercadoPagoProcessor.processPayment(paymentAmount);
 }
 

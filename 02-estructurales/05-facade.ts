@@ -11,3 +11,119 @@
  *
  * https://refactoring.guru/es/design-patterns/facade
  */
+
+import { COLORS } from "../helpers/colors.ts";
+
+class Projector {
+  turnOn() {
+    console.log("Proyector encendido");
+  }
+
+  turnOff() {
+    console.log("Proyector apagado");
+  }
+}
+
+class SoundSystem {
+  on() {
+    console.log("Sistema de sonido encendido");
+  }
+
+  off() {
+    console.log("Sistema de sonido apagado");
+  }
+}
+
+class VideoPlayer {
+  on() {
+    console.log("Video player encendido");
+  }
+
+  play(movie: string) {
+    console.log(`Reproduciendo %c${movie}`, COLORS.blue);
+  }
+
+  stop() {
+    console.log(`Película detenida`);
+  }
+
+  off() {
+    console.log("Video Player apagado");
+  }
+}
+
+class PopcornMaker {
+  poppingPopcorn() {
+    console.log("Haciendo palomitas");
+  }
+
+  tournOffPoppingPopcorn() {
+    console.log("Deteniendo las palomitas");
+  }
+}
+
+interface HomeTheaterFacadeOptions {
+  projector: Projector;
+  soundSystem: SoundSystem;
+  videoPlayer: VideoPlayer;
+  popcornMaker: PopcornMaker;
+}
+
+class HomeTheaterFacade {
+  private projector: Projector;
+  private soundSystem: SoundSystem;
+  private videoPlayer: VideoPlayer;
+  private popcornMaker: PopcornMaker;
+  constructor({
+    projector,
+    soundSystem,
+    videoPlayer,
+    popcornMaker,
+  }: HomeTheaterFacadeOptions) {
+    this.projector = projector;
+    this.popcornMaker = popcornMaker;
+    this.videoPlayer = videoPlayer;
+    this.soundSystem = soundSystem;
+  }
+
+  watchMovie(movie: string) {
+    console.log("%cPreparando para ver la película", COLORS.blue);
+    this.projector.turnOn();
+    this.soundSystem.on();
+    this.popcornMaker.poppingPopcorn();
+    this.videoPlayer.on();
+    this.videoPlayer.play(movie);
+
+    console.log("%cDisfrute la película", COLORS.blue);
+  }
+
+  endWatchingMovie() {
+    console.log("%cPreparando para detener la película", COLORS.blue);
+    this.projector.turnOff();
+    this.soundSystem.off();
+    this.popcornMaker.tournOffPoppingPopcorn();
+    this.videoPlayer.stop();
+    this.videoPlayer.off();
+
+    console.log("%cSistema apagado", COLORS.blue);
+  }
+}
+
+function main() {
+  const projector = new Projector();
+  const videoPlayer = new VideoPlayer();
+  const soundSystem = new SoundSystem();
+  const popcornMaker = new PopcornMaker();
+
+  const homeTheater = new HomeTheaterFacade({
+    projector,
+    soundSystem,
+    videoPlayer,
+    popcornMaker,
+  });
+
+  homeTheater.watchMovie("Los Avengers");
+  homeTheater.endWatchingMovie();
+}
+
+main();
