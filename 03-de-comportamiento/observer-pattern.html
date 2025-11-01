@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Observable Counter</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Counter: <span id="count">0</span></h1>
+      <button id="inc">+1</button>
+      <button id="dec">-1</button>
+    </div>
+
+    <script>
+      // Simple Observable class
+      class Observable {
+        constructor(value) {
+          this._value = value;
+          this._subs = new Set();
+        }
+        subscribe(fn) {
+          this._subs.add(fn);
+          return () => this._subs.delete(fn);
+        }
+        notify() {
+          for (const fn of this._subs) fn(this._value);
+        }
+        get value() {
+          return this._value;
+        }
+        set value(v) {
+          if (v === this._value) return;
+          this._value = v;
+          this.notify();
+        }
+      }
+
+      // Model: a single observable number
+      const count = new Observable(0);
+
+      // View: subscribe and update DOM when model changes
+      const countEl = document.getElementById("count");
+      const unsubscribe = count.subscribe((newVal) => {
+        // small optimization: only update text if changed (we already handle in setter)
+        countEl.textContent = String(newVal);
+      });
+
+      // Controls
+      document
+        .getElementById("inc")
+        .addEventListener("click", () => (count.value += 1));
+      document
+        .getElementById("dec")
+        .addEventListener("click", () => (count.value -= 1));
+
+      // Example of unsubscribing after 10 seconds (to avoid leaks in long-lived apps)
+      // setTimeout(() => unsubscribe(), 10000);
+    </script>
+  </body>
+</html>
